@@ -209,4 +209,169 @@ while (true) {
 
 ### 1. Ejemplos Prácticos Desarrollados
 
+#### Lectura y escritura de ficheros con Path y Files
+
+##### Ejemplo de lectura de líneas de un fichero
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+try (Stream<String> lines = Files.lines(path)) {
+    lines.forEach(System.out::println);
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+##### Ejemplo de escritura de un texto en un fichero
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+String contenido = "Este es el contenido a escribir en el archivo.";
+try {
+    Files.write(path, contenido.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+#### Uso de FileChannel para leer/escribir en ficheros
+
+##### Lectura de bytes en un fichero y almacenamiento en un ByteBuffer
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.READ)) {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    int bytesRead = fileChannel.read(buffer);
+    while (bytesRead != -1) {
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            System.out.print((char) buffer.get());
+        }
+        buffer.clear();
+        bytesRead = fileChannel.read(buffer);
+    }
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+##### Escritura de datos de un ByteBuffer en un fichero
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
+    ByteBuffer buffer = ByteBuffer.wrap("Datos a escribir en el archivo".getBytes());
+    while (buffer.hasRemaining()) {
+        fileChannel.write(buffer);
+    }
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+#### Ejemplo de operación asíncrona con AsynchronousFileChannel
+
+##### Escritura asíncrona en un fichero y monitoreo del estado de la operación
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+try (AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
+    ByteBuffer buffer = ByteBuffer.wrap("Datos asíncronos a escribir en el archivo".getBytes());
+    Future<Integer> result = asyncFileChannel.write(buffer, 0);
+    while (!result.isDone()) {
+        // Realizar otras tareas mientras se completa la escritura
+    }
+    System.out.println("Bytes escritos: " + result.get());
+} catch (IOException | InterruptedException | ExecutionException e) {
+    e.printStackTrace();
+}
+```
+
+#### Cómo utilizar un Selector para gestionar conexiones de red
+
+##### Ejemplo de servidor simple con Selector y SocketChannel
+```java
+try (Selector selector = Selector.open();
+     ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
+    serverSocketChannel.bind(new InetSocketAddress(8080));
+    serverSocketChannel.configureBlocking(false);
+    serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+    while (true) {
+        selector.select();
+        Set<SelectionKey> selectedKeys = selector.selectedKeys();
+        Iterator<SelectionKey> iterator = selectedKeys.iterator();
+        while (iterator.hasNext()) {
+            SelectionKey key = iterator.next();
+            if (key.isAcceptable()) {
+                ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
+                SocketChannel socketChannel = serverChannel.accept();
+                socketChannel.configureBlocking(false);
+                socketChannel.register(selector, SelectionKey.OP_READ);
+            } else if (key.isReadable()) {
+                SocketChannel socketChannel = (SocketChannel) key.channel();
+                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                int bytesRead = socketChannel.read(buffer);
+                if (bytesRead == -1) {
+                    socketChannel.close();
+                } else {
+                    buffer.flip();
+                    socketChannel.write(buffer);
+                    buffer.clear();
+                }
+            }
+            iterator.remove();
+        }
+    }
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
 ### 2. Comparativa con Ejemplos Concretos
+
+#### Comparación entre un programa de lectura de ficheros con Java IO y uno con Java NIO
+
+##### Lectura de ficheros con Java IO
+```java
+try (BufferedReader reader = new BufferedReader(new FileReader("/ruta/al/archivo.txt"))) {
+    String line;
+    while ((line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+##### Lectura de ficheros con Java NIO
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+try (Stream<String> lines = Files.lines(path)) {
+    lines.forEach(System.out::println);
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+##### Análisis del rendimiento y las diferencias de complejidad de código
+- **Java IO**: La lectura de ficheros con Java IO es sencilla y directa, utilizando clases como `BufferedReader` y `FileReader`. Sin embargo, estas operaciones son bloqueantes, lo que puede afectar el rendimiento en aplicaciones que requieren alta concurrencia.
+- **Java NIO**: La lectura de ficheros con Java NIO es más eficiente en términos de rendimiento, especialmente para aplicaciones que manejan grandes volúmenes de datos o múltiples conexiones simultáneas. Utiliza clases como `Path` y `Files`, que permiten operaciones no bloqueantes y una gestión más flexible de los ficheros.
+
+##### Ventajas y desventajas de cada enfoque según el caso de uso
+- **Java IO**:
+  - **Ventajas**:
+    - Simplicidad y facilidad de uso.
+    - Adecuado para aplicaciones pequeñas o con pocas operaciones de I/O.
+  - **Desventajas**:
+    - Operaciones bloqueantes que pueden afectar el rendimiento en aplicaciones concurrentes.
+    - Menos flexible y eficiente en la gestión de grandes volúmenes de datos.
+
+- **Java NIO**:
+  - **Ventajas**:
+    - Operaciones no bloqueantes que mejoran el rendimiento en aplicaciones concurrentes.
+    - Mayor flexibilidad y eficiencia en la gestión de ficheros y directorios.
+    - Mejor soporte para sistemas de archivos distribuidos y operaciones de red.
+  - **Desventajas**:
+    - Mayor complejidad en la implementación.
+    - Requiere un mayor conocimiento de la API NIO y su funcionamiento.
+
+En resumen, la elección entre Java IO y Java NIO depende del caso de uso específico. Para aplicaciones simples y con pocas operaciones de I/O, Java IO puede ser suficiente. Sin embargo, para aplicaciones que requieren alta concurrencia, manejo de grandes volúmenes de datos o eficiencia en operaciones de red, Java NIO es la mejor opción.
+
+## Recursos y Bibliografía
