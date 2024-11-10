@@ -374,4 +374,15 @@ try (Stream<String> lines = Files.lines(path)) {
 
 En resumen, la elección entre Java IO y Java NIO depende del caso de uso específico. Para aplicaciones simples y con pocas operaciones de I/O, Java IO puede ser suficiente. Sin embargo, para aplicaciones que requieren alta concurrencia, manejo de grandes volúmenes de datos o eficiencia en operaciones de red, Java NIO es la mejor opción.
 
-## Recursos y Bibliografía
+---
+
+### Recursos y Bibliografía
+
+- [Documentación: Java IO](https://docs.oracle.com/javase/7/docs/api/java/io/package-summary.html)
+- [Documentación: Java NIO](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/package-summary.html)
+- [Curso: Java IO Makigas](https://www.makigas.es/series/java-io)
+- [Youtube: Diferencias entre Java IO y Java NIO](https://www.youtube.com/watch?v=YWvR7kizhhc)
+- [GitHub: Busqueda de ejemplos](https://github.com/search?q=java+nio)
+- [Artículo: ¿Java NIO es más rápido que IO?](https://medium-com.translate.goog/@yaojianhe15/home-truth-series-java-nio-faster-than-io-0d3305fe321c?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=rq&_x_tr_hist=true)
+- [Artículo: Kill the myth please. NIO is *not* faster than IO](https://mailinator.blogspot.com/2008/02/kill-myth-please-nio-is-not-faster-than.html)
+- [Guía: Markdown Syntax](https://www.markdownguide.org/basic-syntax/)
