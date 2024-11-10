@@ -109,6 +109,3 @@ Los **selectores** son herramientas que permiten gestionar múltiples canales si
 
 ---
 
-## Resumen
-
-Esta comparativa muestra las claras ventajas de **Java NIO** sobre **Java IO**, especialmente cuando se trata de trabajar con grandes volúmenes de datos, manejar múltiples conexiones de red o crear aplicaciones con alta concurrencia. **NIO** ofrece operaciones de entrada/salida más rápidas y eficientes, lo que optimiza el uso de recursos y mejora el rendimiento general del sistema.
