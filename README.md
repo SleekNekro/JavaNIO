@@ -109,3 +109,104 @@ Los **selectores** son herramientas que permiten gestionar múltiples canales si
 
 ---
 
+## 3. **Clases clave de Java NIO**
+
+### Path: ¿Qué es, métodos principales y ejemplos?
+
+La clase `Path` en Java NIO representa una ruta de archivo o directorio. Es una mejora significativa sobre la clase `File` de Java IO, proporcionando una forma más flexible y potente de trabajar con rutas de archivos.
+
+#### Métodos principales:
+- `getFileName()`: Obtiene el nombre del archivo o directorio.
+- `getParent()`: Obtiene la ruta del directorio padre.
+- `toAbsolutePath()`: Convierte la ruta en una ruta absoluta.
+- `resolve()`: Combina dos rutas.
+
+#### Ejemplo:
+```java
+Path path = Paths.get("/ruta/al/archivo.txt");
+System.out.println("Nombre del archivo: " + path.getFileName());
+System.out.println("Ruta absoluta: " + path.toAbsolutePath());
+```
+
+### Files: Operaciones con ficheros y directorios
+
+La clase `Files` proporciona métodos estáticos para realizar operaciones de I/O con archivos y directorios de manera sencilla y eficiente.
+
+#### Operaciones comunes:
+- `createFile()`: Crea un nuevo archivo.
+- `delete()`: Elimina un archivo o directorio.
+- `copy()`: Copia un archivo o directorio.
+- `move()`: Mueve o renombra un archivo o directorio.
+
+#### Ejemplo:
+```java
+Path source = Paths.get("/ruta/origen.txt");
+Path target = Paths.get("/ruta/destino.txt");
+Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+```
+
+### FileChannel: Gestión de ficheros a bajo nivel
+
+`FileChannel` permite realizar operaciones de I/O a bajo nivel con archivos, proporcionando un control más preciso sobre la lectura y escritura de datos.
+
+#### Ejemplo:
+```java
+try (FileChannel fileChannel = FileChannel.open(Paths.get("/ruta/archivo.txt"), StandardOpenOption.READ)) {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    int bytesRead = fileChannel.read(buffer);
+    while (bytesRead != -1) {
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            System.out.print((char) buffer.get());
+        }
+        buffer.clear();
+        bytesRead = fileChannel.read(buffer);
+    }
+}
+```
+
+### AsynchronousFileChannel: Operaciones asíncronas con ejemplos
+
+`AsynchronousFileChannel` permite realizar operaciones de I/O de manera asíncrona, mejorando el rendimiento en aplicaciones que requieren alta concurrencia.
+
+#### Ejemplo:
+```java
+Path path = Paths.get("/ruta/archivo.txt");
+AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+Future<Integer> result = asyncFileChannel.read(buffer, 0);
+while (!result.isDone()) {
+    // Realizar otras tareas mientras se completa la lectura
+}
+buffer.flip();
+System.out.println("Leído: " + new String(buffer.array(), 0, result.get()));
+```
+
+### Selector y SocketChannel: Aplicación en comunicaciones de red
+
+`Selector` y `SocketChannel` son fundamentales para gestionar conexiones de red de manera eficiente, permitiendo manejar múltiples conexiones simultáneamente sin bloquear el hilo principal.
+
+#### Ejemplo:
+```java
+Selector selector = Selector.open();
+SocketChannel socketChannel = SocketChannel.open(new InetSocketAddress("localhost", 8080));
+socketChannel.configureBlocking(false);
+socketChannel.register(selector, SelectionKey.OP_READ);
+
+while (true) {
+    selector.select();
+    Set<SelectionKey> selectedKeys = selector.selectedKeys();
+    Iterator<SelectionKey> iterator = selectedKeys.iterator();
+    while (iterator.hasNext()) {
+        SelectionKey key = iterator.next();
+        if (key.isReadable()) {
+            SocketChannel channel = (SocketChannel) key.channel();
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            channel.read(buffer);
+            buffer.flip();
+            System.out.println("Mensaje recibido: " + new String(buffer.array(), 0, buffer.limit()));
+        }
+        iterator.remove();
+    }
+}
+```
