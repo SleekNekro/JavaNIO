@@ -390,7 +390,7 @@ En resumen, la elección entre Java IO y Java NIO depende del caso de uso espec�
 ---
 
   ### Autores
-  Luis Miguel Benítez Moreno
-  Íker Pérez Mata
-  Daniel González Rico
-  Martín Sánchez Pedrero
+  Luis Miguel Benítez Moreno.
+  Íker Pérez Mata.
+  Daniel González Rico.
+  Martín Sánchez Pedrero.
