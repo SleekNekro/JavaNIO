@@ -386,3 +386,11 @@ En resumen, la elección entre Java IO y Java NIO depende del caso de uso espec�
 - [Artículo: ¿Java NIO es más rápido que IO?](https://medium-com.translate.goog/@yaojianhe15/home-truth-series-java-nio-faster-than-io-0d3305fe321c?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=rq&_x_tr_hist=true)
 - [Artículo: Kill the myth please. NIO is *not* faster than IO](https://mailinator.blogspot.com/2008/02/kill-myth-please-nio-is-not-faster-than.html)
 - [Guía: Markdown Syntax](https://www.markdownguide.org/basic-syntax/)
+
+---
+
+  ### Autores
+  Luis Miguel Benítez Moreno
+  Íker Pérez Mata
+  Daniel González Rico
+  Martín Sánchez Pedrero
